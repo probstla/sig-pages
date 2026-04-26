@@ -13,6 +13,13 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: First interaction
+        uses: actions/first-interaction@v1.3.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: ${{ vars.FIRST_ISSUE_MESSAGE }}
+          pr-message: ${{ vars.FIRST_PR_MESSAGE }}
+
       - name: Ensure label exists and add it to issue
         uses: actions/github-script@v7
         with:
@@ -44,6 +51,7 @@ jobs:
             });
 
       - name: Send email notification to SIG AI members
+        if: ${{ vars.ISSUE_NOTIFY_EMAILS != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}
