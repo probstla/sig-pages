@@ -55,6 +55,27 @@ def test_no_phantom_empty_row_in_empty_table(docs, tmp_path):
     assert "<td></td>" not in read_html(tmp_path)
 
 
+def test_table_rows_between_markers_rendered_as_tbody(docs, tmp_path):
+    """Rows between COMMITS_START and COMMITS_END must land inside <tbody>, not as plain text."""
+    (docs / "commits.md").write_text(
+        "# Commit Log\n\n"
+        "| Datum | Autor |\n"
+        "|:------|:------|\n"
+        "<!-- COMMITS_START -->\n"
+        "| 2024-01-01 | Alice |\n"
+        "| 2024-01-02 | Bob |\n"
+        "<!-- COMMITS_END -->\n"
+    )
+    generate_html.main()
+    html = read_html(tmp_path)
+    assert "<tbody>" in html
+    assert "<td" in html
+    assert "Alice" in html
+    assert "Bob" in html
+    # rows must NOT fall through to a plain paragraph
+    assert "| 2024-01-01 |" not in html
+
+
 # ---------------------------------------------------------------------------
 # Partial update — shell is preserved
 # ---------------------------------------------------------------------------
