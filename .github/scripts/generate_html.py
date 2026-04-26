@@ -20,7 +20,7 @@ import markdown
 DOCS_DIR = "docs"
 OUTPUT   = "docs/index.html"
 
-_MARKER_RE = re.compile(r"<!--\s*COMMITS_(?:START|END)\s*-->", re.MULTILINE)
+_MARKER_RE = re.compile(r"^<!--\s*COMMITS_(?:START|END)\s*-->\n?", re.MULTILINE)
 
 
 # ---------------------------------------------------------------------------
