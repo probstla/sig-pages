@@ -1,0 +1,66 @@
+name: Notify SIG AI Members on New Issue
+
+on:
+  issues:
+    types: [opened]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  label-and-notify:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Ensure label exists and add it to issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = 'sig-ai-members-informed';
+
+            // Create label if it doesn't exist yet
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label
+              });
+            } catch {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+                color: '0075ca',
+                description: 'SIG AI members have been informed about this issue'
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [label]
+            });
+
+      - name: Send email notification to SIG AI members
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[sig-pages] New Issue: ${{ github.event.issue.title }}"
+          to: ${{ vars.ISSUE_NOTIFY_EMAILS }}
+          from: "SIG Pages Bot <${{ secrets.MAIL_USERNAME }}>"
+          convert_markdown: true
+          body: |
+            A new issue was opened in **${{ github.repository }}**.
+
+            **Title:** ${{ github.event.issue.title }}
+            **Author:** ${{ github.event.issue.user.login }}
+            **URL:** ${{ github.event.issue.html_url }}
+
+            ---
+
+            ${{ github.event.issue.body }}
