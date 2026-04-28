@@ -43,20 +43,16 @@ jobs:
               labels: [label]
             });
 
-      - name: Send email notification to SIG AI members
-        if: ${{ vars.ISSUE_NOTIFY_EMAILS != '' }}
-        uses: dawidd6/action-send-mail@v3
+      - name: Post initial issue guidance comment
+        uses: actions/github-script@v7
         with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[sig-pages] New Issue: ${{ github.event.issue.title }}"
-          to: ${{ vars.ISSUE_NOTIFY_EMAILS }}
-          from: "SIG Pages Bot <${{ secrets.MAIL_USERNAME }}>"
-          convert_markdown: true
-          body: |
-            A new issue was opened in **${{ github.repository }}**.
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'This is a new issue, @Manuela-Probst please label the issue accordingly and provide an initial assessment.'
+            });
 
             **Title:** ${{ github.event.issue.title }}
             **Author:** ${{ github.event.issue.user.login }}
