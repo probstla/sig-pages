@@ -20,11 +20,19 @@ jobs:
       contents: write
       pages: write
       id-token: write
+    
     steps:
+      - name: Generate GitHub App Token   # ← zuerst!
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }} 
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v4
