@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     # Skip bot commits (loop protection) and commits tagged with #nopagesupdate
     if: >
-      github.actor != 'github-actions[bot]' &&
       !contains(github.event.head_commit.message, '#nopagesupdate')
     permissions:
       contents: write
