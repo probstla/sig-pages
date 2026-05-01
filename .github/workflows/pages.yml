@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     # Skip bot commits (loop protection) and commits tagged with #nopagesupdate
     # Note: The #nopagesupdate tag is used to prevent infinite loops when the workflow itself makes commits to update the docs. By including this tag in the commit message, we can ensure that those commits do not trigger another run of the workflow.
+    # There will be a second run with a commit this has the #nopagesupdate tag, but it will not trigger another run of the workflow, thus preventing an infinite loop of updates.
     if: >
       github.actor != 'github-actions[bot]' &&
       !contains(github.event.head_commit.message, '#nopagesupdate')
