@@ -51,5 +51,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: 'This is a new issue, @Manuela-Probst please label the issue accordingly and provide an initial assessment.'
+              body: 'This is a new issue, @maprobst please label the issue accordingly and provide an initial assessment.'
             });
